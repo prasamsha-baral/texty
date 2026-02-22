@@ -10,13 +10,18 @@ const io = new Server(httpServer, {
     origin: "*",
   },
 });
+interface messages {
+  texts: string;
+  sender: string;
+}
 
-const message: string[] = [];
+const message: messages[] = [];
 
 io.on("connection", (socket) => {
-  socket.on("texts", (data: string): void => {
-    if (typeof data !== "string") return;
-    message.push(data);
+  socket.on("texts", (texts: string, sender: string): void => {
+    if (typeof texts !== "string" && typeof sender !== "string") return;
+    console.log(texts + " " + sender);
+    message.push({ texts, sender });
     io.emit("messages", message);
   });
   // on First connection
