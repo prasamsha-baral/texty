@@ -14,18 +14,15 @@ const io = new Server(httpServer, {
 const message: string[] = [];
 
 io.on("connection", (socket) => {
-  socket.on("texts", (data) => {
-    console.log(data);
+  socket.on("texts", (data: string): void => {
+    if (typeof data !== "string") return;
     message.push(data);
-
-    // 🔥 BROADCAST UPDATED ARRAY
     io.emit("messages", message);
   });
-
-  // Send existing messages on connection
+  // on First connection
   socket.emit("messages", message);
 });
 
-httpServer.listen(port, "0.0.0.0", () => {
+httpServer.listen(port, "0.0.0.0", (): void => {
   console.log("Server started at port ", port);
 });

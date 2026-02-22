@@ -2,18 +2,23 @@ import { useEffect, useState } from "react";
 import { socket } from "./components/socket";
 
 const App = () => {
-  const [text, setText] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState<string>("");
+  const [messages, setMessages] = useState<string[]>([]);
   useEffect(() => {
     socket.on("connect", () => {
       console.log("connected");
     });
-    socket.on("messages", (data: []): void => {
+    socket.on("messages", (data: string[]): void => {
       setMessages(data);
     });
+    return () => {
+      socket.off("connect");
+      socket.off("messages");
+    };
   }, []);
-  const send = () => {
-    socket.emit("texts", text);
+  const send = (): void => {
+    if (text.trim() === "") return;
+    socket.emit("texts", text.trim());
     setText("");
   };
 
