@@ -1,4 +1,6 @@
 import type React from "react";
+import axios from "axios";
+import { URL, socket } from "./socket";
 
 interface LoginProps {
   name: string;
@@ -9,6 +11,23 @@ const Login: React.FC<LoginProps> = ({ name, setName, setShowModal }) => {
   const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(name);
+    axios
+      .post(
+        `${URL}/user`,
+        {
+          name: name,
+        },
+        { withCredentials: true },
+      )
+      .then(() => {
+        socket.on("connect", () => {
+          console.log("socket connected");
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     if (name.trim() !== "") {
       setShowModal(false);
     }

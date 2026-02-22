@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { socket } from "./components/socket";
 import Modal from "./components/modal";
 import Login from "./components/login";
+import axios from "axios";
 
 const App: React.FC = () => {
   interface message {
@@ -15,9 +16,17 @@ const App: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(true);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected");
-    });
+    const login = async () => {
+      await axios
+        .get("http://localhost:8080/login", { withCredentials: true })
+        .then((res) => {
+          if (res.data.name) {
+            setName(res.data.name);
+            setShowModal(false);
+          }
+        });
+    };
+    login();
     socket.on("messages", (data: message[]): void => {
       setMessages(data);
       console.log(data);
@@ -41,7 +50,7 @@ const App: React.FC = () => {
           <Login name={name} setName={setName} setShowModal={setShowModal} />
         </Modal>
       ) : null}
-      <section className="flex flex-col h-screen bg-[#eee]">
+      <section className="flex flex-col h-dvh bg-[#eee]">
         <div className="flex-1 max-w-300 mx-auto p-4 flex flex-col w-full overflow-y-scroll no-scrollbar wrap-anywhere gap-1">
           {messages.length == 0
             ? null
@@ -55,7 +64,7 @@ const App: React.FC = () => {
               ))}
         </div>
         <div className="bg-white h-15 ">
-          <div className="max-w-300 mx-auto h-full flex gap-1 justify-center items-center">
+          <div className="max-w-300 mx-auto px-4 h-full flex gap-1 justify-center items-center">
             <input
               className="border-[#aeaeae] rounded-l-full flex-1 pl-4 rounded-r-full focus:outline-none h-9 border-2"
               value={text}
