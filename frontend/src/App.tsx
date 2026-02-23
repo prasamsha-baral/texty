@@ -18,7 +18,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const login = async () => {
       await axios
-        .get("http://localhost:8080/login", { withCredentials: true })
+        .get("http://localhost:8080/auth/me", { withCredentials: true })
         .then((res) => {
           if (res.data.name) {
             setName(res.data.name);

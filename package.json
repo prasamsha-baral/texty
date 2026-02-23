@@ -4,11 +4,10 @@
     "backend"
   ],
   "scripts": {
-    "start": "bun --filter '*' dev"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.2.0",
-    "tailwindcss": "^4.2.0"
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
+    "serve": "bun --filter 'backend' serve",
+    "start": "bun run build && bun run serve"
   },
   "devDependencies": {
     "prettier": "^3.8.1"

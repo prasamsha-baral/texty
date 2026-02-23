@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch run ./src/index.ts",
-    "build": "tsc"
+    "build": "tsc -b",
+    "serve": "node ./dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -14,11 +15,9 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.0"
   },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "typescript": "^5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
