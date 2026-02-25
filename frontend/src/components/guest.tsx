@@ -11,7 +11,7 @@ const Guest = ({goToLogin}:Props) => {
     <div >
        
          <h3 className='mt-10 mb-3'>Continue as guest ?</h3>
-    <button onClick={goToLogin} className='bg-gray-500 cursor-pointer text-white px-4 py-2'>guest mode</button>
+    <button onClick={goToLogin} className='bg-gray-500 border rounded-2xl cursor-pointer text-white px-4 py-1'>guest mode</button>
 
 
 

@@ -49,7 +49,7 @@ const [page, setpage] = useState<"register"| "login">("register")
     <>
       {showModal ? (
         <Modal>
-            {page =="register"&&(
+            {page =="register"  && (
       <Register goToLogin={()=>setpage("login")}/>
          ) }
          {page ==="login" && <Login name={name} setName={setName} setShowModal={setShowModal} />}
