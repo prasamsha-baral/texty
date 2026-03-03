@@ -2,12 +2,12 @@ import type React from "react";
 import { useState } from "react";
 import User from "./zod";
 
-type Props = {
-  // goToLogin: () => void;
+interface RegisterProps {
+  name: string;
+  setName: (arg: string) => void;
   setShowModal: (arg: boolean) => void;
-};
-const Register = ({  setShowModal }: Props) => {
-  const [name, setname] = useState<string>("");
+}
+const Register = ({ name, setName, setShowModal }: RegisterProps) => {
   const [email, setemail] = useState<string>("");
   const [password, setpassword] = useState<string>("");
   const [error, seterror] = useState<string>("");
@@ -28,6 +28,7 @@ const Register = ({  setShowModal }: Props) => {
       seterror(errorMessages);
       return;
     }
+    setShowModal(false);
   };
   return (
     <>
@@ -40,7 +41,7 @@ const Register = ({  setShowModal }: Props) => {
             <input
               type="name"
               placeholder="   Enter username"
-              onChange={(e) => setname(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </label>
 
@@ -67,9 +68,6 @@ const Register = ({  setShowModal }: Props) => {
           >
             Submit
           </button>
-          {/* <button className="mx-auto" onClick={goToLogin}>
-            continue as guest
-          </button> */}
         </form>
       </div>
     </>

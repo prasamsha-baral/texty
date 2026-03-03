@@ -2,25 +2,40 @@ import React, { useEffect, useState } from "react";
 import { socket } from "./components/socket";
 import Modal from "./components/modal";
 import Login from "./components/auth/login";
-import axios from "axios";
 import Register from "./components/auth/register";
-import Front from "./components/auth/front";
+import axios from "axios";
+import Front from "./components/front";
+import Sidebar from "./components/sidebar";
+import { SidebarOpen, SidebarClose } from "lucide-react";
 
 const App: React.FC = () => {
-  interface message {
+  interface Message {
     texts: string;
     sender: string;
   }
-  type page = "front" | "register" | "login";
-  type modal = boolean | null;
+
+  type Page = "front" | "register" | "login";
+  type ModalState = boolean | null;
 
   const [text, setText] = useState<string>("");
-  const [messages, setMessages] = useState<message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [name, setName] = useState<string>("");
-  const [showModal, setShowModal] = useState<modal>(null);
-  const [page, setpage] = useState<page>("front");
+  const [showModal, setShowModal] = useState<ModalState>(null);
+  const [page, setPage] = useState<Page>("front");
+  const [isOpen, setIsOpen] = useState<boolean>(true);
 
-
+  const pages = {
+    front: (
+      <Front
+        goToLogin={() => setPage("login")}
+        goToRegister={() => setPage("register")}
+      />
+    ),
+    login: <Login name={name} setName={setName} setShowModal={setShowModal} />,
+    register: (
+      <Register name={name} setName={setName} setShowModal={setShowModal} />
+    ),
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -28,6 +43,7 @@ const App: React.FC = () => {
         const res = await axios.get("http://localhost:8080/auth/me", {
           withCredentials: true,
         });
+
         if (res.data.name) {
           setName(res.data.name);
           setShowModal(false);
@@ -35,86 +51,81 @@ const App: React.FC = () => {
           setShowModal(true);
         }
       } catch (error) {
-        // User not authenticated, show modal
-        alert(error);
+        console.log(error);
         setShowModal(true);
       }
     };
 
     checkAuth();
 
-    socket.on("messages", (data: message[]): void => {
-      setMessages(data);
-      console.log(data);
-    });
+    socket.on("messages", (data: Message[]) => setMessages(data));
 
     return () => {
-      socket.off("connect");
       socket.off("messages");
     };
   }, []);
 
   const send = (): void => {
     const trimmed = text.trim();
-    if (trimmed === "") return;
+    if (!trimmed) return;
+
     socket.emit("texts", trimmed, name);
     setText("");
   };
 
-  // Show nothing while checking authentication
-  if (showModal === null) {
-    return null;
-  }
+  if (showModal === null) return null;
 
   return (
     <>
-      {showModal ? (
-        <Modal>
-          {page === "front" ? (
-            <Front
-              setShowModal={setShowModal}
-              goToLogin={() => setpage("login")}
-            />
+      {showModal && <Modal>{pages[page]}</Modal>}
+
+      <div className="relative flex h-dvh overflow-hidden bg-[#eee]">
+        <Sidebar isOpen={isOpen} />
+
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className={`absolute z-50 top-4 left-4 blacky p-2 rounded-full transition duration-300 ease-in-out hover:scale-105 active:scale-95
+            ${isOpen ? `translate-x-40` : ``}
+            `}
+        >
+          {isOpen ? (
+            <SidebarClose size={20} color="white" />
           ) : (
-            <Login name={name} setName={setName} setShowModal={setShowModal} />
+            <SidebarOpen size={20} color="white" />
           )}
-        </Modal>
-      ) : null}
-      <section className="flex flex-col h-dvh bg-[#eee]">
-        <div className="flex-1 max-w-300 mx-auto p-4 flex flex-col w-full overflow-y-scroll no-scrollbar wrap-anywhere gap-1">
-          {messages.length == 0
-            ? null
-            : messages.map((msg, index) => (
-                <div key={index}>
-                  {msg.sender}
-                  <div className="rounded-2xl text-white bg-blue-500 w-fit px-4 p-1">
-                    {msg.texts}
-                  </div>
+        </button>
+
+        <section className="flex flex-1 flex-col relative">
+          <div className="flex-1 max-w-5xl mx-auto p-4 flex flex-col w-full overflow-y-scroll no-scrollbar gap-2">
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <span className="text-xs text-gray-500">{msg.sender}</span>
+                <div className="rounded-2xl text-white blacky w-fit px-4 py-1">
+                  {msg.texts}
                 </div>
-              ))}
-        </div>
-        <div className="bg-white h-15 ">
-          <div className="max-w-300 mx-auto px-4 h-full flex gap-1 justify-center items-center">
-            <input
-              className="border-[#aeaeae] rounded-l-full flex-1 pl-4 rounded-r-full focus:outline-none h-9 border-2"
-              value={text}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setText(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key == "Enter") send();
-              }}
-              placeholder="Message"
-            />
-            <button
-              className="bg-blue-500  w-20 rounded-2xl text-white h-9 px-4"
-              onClick={send}
-            >
-              send
-            </button>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
+
+          <div className="bg-white p-4">
+            <div className="max-w-5xl mx-auto flex gap-2 items-center">
+              <input
+                className="border-[#aeaeae] rounded-full flex-1 pl-4 focus:outline-none h-9 border-2"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && send()}
+                placeholder="Message"
+              />
+              <button
+                onClick={send}
+                className="blacky w-20 rounded-2xl text-white h-9 hover:scale-105 hover:shadow-lg transition"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
     </>
   );
 };
