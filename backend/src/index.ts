@@ -1,22 +1,13 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import router from "./routes";
 import cors, { CorsOptions } from "cors";
-import dotenv from "dotenv";
-import { generateToken, verifyToken } from "./jwt.js";
 import cookieParser from "cookie-parser";
-import { fileURLToPath } from "url";
-import path from "path";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const __frontend = path.join(__dirname, "../../frontend/dist");
-
-dotenv.config({ path: "./.env" });
 
 const port = 8080;
 const app = express();
 const httpServer = createServer(app);
-const secret = process.env.SECRET || "sumitpdl";
 const messages: messages[] = [];
 
 const corsOptions: CorsOptions = {
@@ -37,35 +28,7 @@ interface messages {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
-app.use(express.static(__frontend));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__frontend, "index.html"));
-});
-app.post("/login", (req, res) => {
-  const name = req.body.name;
-  const token = generateToken({ name: name }, secret, "10h");
-  res.cookie("name", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 10 * 60 * 60 * 1000,
-  });
-  res.sendStatus(200);
-});
-app.get("/auth/me", (req, res) => {
-  const token = req.cookies.name;
-  if (!token) {
-    res.sendStatus(402);
-    return;
-  }
-  try {
-    const decoded = verifyToken(token, secret);
-    res.json({ name: (decoded as any).name });
-  } catch {
-    res.sendStatus(401);
-  }
-});
+app.use("/", router);
 
 io.on("connection", (socket): void => {
   socket.on("texts", (message: string, user: string): void => {

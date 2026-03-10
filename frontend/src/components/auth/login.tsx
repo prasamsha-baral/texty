@@ -13,7 +13,7 @@ const Login: React.FC<LoginProps> = ({ name, setName, setShowModal }) => {
     console.log(name);
     axios
       .post(
-        `${URL}/login`,
+        `${URL}/auth/login`,
         {
           name: name,
         },
