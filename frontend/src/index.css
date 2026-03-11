@@ -21,4 +21,7 @@
   .navItem {
     @apply cursor-pointer font-sans text-black text-xs px-2 pt-1.5;
   }
+  .reg{
+    @apply  w-full text-sm border-b border-gray-400 bg-transparent py-2 outline-none focus:border-black
+  }
 }

@@ -1,9 +1,13 @@
+import girl from "../../../assets/girl2.png"
+import  chat from "../../../assets/v1.png"
+
+
 type Props = {
   goToLogin: () => void;
   goToRegister: () => void;
 };
 
-const Front = ({ goToLogin, goToRegister }: Props) => {
+ const Front = ({ goToLogin, goToRegister }: Props) => {
   return (
     <>
       <div
@@ -35,7 +39,9 @@ const Front = ({ goToLogin, goToRegister }: Props) => {
           </div>
         </nav>
 
-        <div className="px-4 sm:px-6 md:px-10">
+
+        <div className="flex  lg:flex-row items-center justify-between ">
+        <div className="flex-1 px-4 sm:px-6 md:px-10">
           <h1 className=" text-black underline text-xl sm:text-2xl md:text-3xl lg:4xl px-1.5 font-serif">
             Designed for <br />
             Productivity in <br />
@@ -56,12 +62,28 @@ const Front = ({ goToLogin, goToRegister }: Props) => {
             </select>
           </div>
           <button
-            className="mx-auto hover:cursor-pointer underline"
+            className="hover:cursor-pointer underline"
             onClick={goToLogin}
           >
             continue as guest
           </button>
         </div>
+
+     <div className="flex-1 flex justify-center  mt-5 lg:mt-0">
+      <div className="relative">
+    <img
+      src={chat}
+      alt="Chat UI"
+      className="w-500px  lg:w-620px drop-shadow-2xl -translate-y-6"
+    />
+    <img src={girl} alt=""
+    className="absolute  top-1/2   left-1/2  -translate-y-16 -translate-x-10  w-36 lg:w-48 drop-shadow-xl" />
+    </div>
+  </div>
+
+    </div>
+
+
       </div>
     </>
   );
